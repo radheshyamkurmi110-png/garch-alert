@@ -12,11 +12,24 @@ ann = vol * np.sqrt(252)
 risk = 10000
 stop = 1.5 * vol / 100
 size = risk / stop
-view = ("Options mehengi: selling edge" if vix > ann
-        else "Options sasti: buying edge")
 
-msg = (f"Nifty close: {d.iloc[-1]:.0f}\n"
-       f"GARCH kal ka vol: {vol:.2f}% (annual {ann:.1f}%)\n"
+ratio = vix / ann
+if ratio > 1.15:
+    view = f"Options mehengi ({(ratio-1)*100:.0f}% upar): selling edge"
+elif ratio < 0.95:
+    view = f"Options sasti ({(1-ratio)*100:.0f}% neeche): buying edge"
+else:
+    view = "Options fair: koi clear edge nahi"
+
+last = float(d.iloc[-1])
+r1 = last * vol / 100
+r2 = 2 * r1
+
+msg = (f"Nifty close: {last:.0f}\n"
+       f"Agle trading din ka range (close se):\n"
+       f"GARCH vol: {vol:.2f}% (annual {ann:.1f}%)\n"
+       f"1σ range: {last-r1:.0f} - {last+r1:.0f}\n"
+       f"2σ range: {last-r2:.0f} - {last+r2:.0f}\n"
        f"India VIX: {vix:.1f}\n{view}\n"
        f"Stop: {1.5*vol:.2f}% | Position: Rs {size:,.0f} (risk Rs {risk})")
 
